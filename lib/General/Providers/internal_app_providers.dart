@@ -26,12 +26,12 @@ class InternalStatusProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setRecordingSessionUID(String value) async {
+  Future<void> setRecordingSessionUID(String? value) async {
     recordingSessionUID = value;
     notifyListeners();
   }
 
-  Future<void> sethomePageSelectedOption(String? homePageSelection) async {
+  Future<void> setHomePageSelectedOption(String? homePageSelection) async {
     homePageSelectedOption = homePageSelection;
     notifyListeners();
   }

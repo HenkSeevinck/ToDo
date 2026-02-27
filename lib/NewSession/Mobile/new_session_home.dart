@@ -20,7 +20,6 @@ class NewSessionHome extends StatefulWidget {
 class _NewSessionHomeState extends State<NewSessionHome> {
   final AudioRecorderService _audioRecorderService = AudioRecorderService();
   bool _isRecording = false;
-  bool _isProcessing = false;
 
   // --------------------------------------------------------------
   // Function to handle audio blocks
@@ -29,23 +28,16 @@ class _NewSessionHomeState extends State<NewSessionHome> {
     final internalStatusProvider = Provider.of<InternalStatusProvider>(context, listen: false);
     if (audioBlock.isEmpty) return;
 
-    setState(() {
-      _isProcessing = true;
-    });
-
     try {
+      // No setState here. The provider will handle notifying the UI.
       await todoListProvider.processAudio(audioBlock, internalStatusProvider);
       debugPrint('Audio block processed successfully.');
     } catch (e) {
       debugPrint('Error processing audio block: $e');
-      // Optionally, show an error message to the user
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error processing audio: $e')));
-    } finally {
-      setState(() {
-        _isProcessing = false;
-      });
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error processing audio: $e')));
+      }
     }
   }
 
@@ -75,12 +67,18 @@ class _NewSessionHomeState extends State<NewSessionHome> {
   @override
   Widget build(BuildContext context) {
     final localAppTheme = ResponsiveTheme(context).theme;
-    final todoListProvider = Provider.of<TodoListProvider>(
-      context,
-      listen: true,
+    final internalStatusProvider = Provider.of<InternalStatusProvider>(context, listen: true);
+    final todoListProvider = Provider.of<TodoListProvider>(context, listen: true,);
+    final isProcessing = todoListProvider.isProcessing;
+    final recordingUID = internalStatusProvider.recordingSessionUID;
+    final audioScript = todoListProvider.audioScripts.firstWhere(
+          (script) => script['recordingUID'] == recordingUID,
+          orElse: () => <String, dynamic>{},
     );
-    final audioScript = todoListProvider.audioScript;
-    final todoList = todoListProvider.todoList;
+
+    //final audioScript = todoListProvider.audioScript;
+    final todoListFull = todoListProvider.todoList;
+    final todoList = todoListFull.where((todo) => todo['recordingUID'] == recordingUID).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -89,6 +87,7 @@ class _NewSessionHomeState extends State<NewSessionHome> {
           context: context,
           automaticallyImplyLeading: true,
           onPressed: () {
+            internalStatusProvider.setRecordingSessionUID(null);
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const HomePage()),
             );
@@ -141,7 +140,7 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                 ),
                 child: SizedBox(
                   width: double.infinity,
-                  child: _isProcessing
+                  child: isProcessing
                       ? Center(
                           child: CircularProgressIndicator(
                             color:
@@ -197,7 +196,8 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                     ),
                     SizedBox(height: 10),
                     Expanded(
-                      child: ListView.builder(
+                      child: todoList.isNotEmpty
+                      ? ListView.builder(
                         itemCount: todoList.length,
                         itemBuilder: (context, index) {
                           final item = todoList[index];
@@ -227,7 +227,7 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                               ],
                             ),
                             trailing:SizedBox(
-                              width: 92,
+                              width: 100,
                               child: Row(
                                 children: [
                                   IconButton(
@@ -255,7 +255,8 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                             ),
                           );
                         },
-                      ),
+                      )
+                      : SizedBox(),
                     ),
                   ],
                 ),
