@@ -1,14 +1,17 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_list/AudioRecording/audio_recording.dart';
 import 'package:todo_list/General/Providers/todo_list_provider.dart';
 import 'package:todo_list/General/Widgets/widgets.dart';
 import 'package:todo_list/HomePage/home_page.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../General/Providers/appuser_provider.dart';
 import '../../General/Providers/internal_app_providers.dart';
 import '../../General/Variables/globalvariables';
+import 'edit_todo_popup.dart';
 
 class NewSessionHome extends StatefulWidget {
   const NewSessionHome({super.key});
@@ -26,11 +29,14 @@ class _NewSessionHomeState extends State<NewSessionHome> {
   Future<void> _handleAudioBlock(Uint8List audioBlock) async {
     final todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
     final internalStatusProvider = Provider.of<InternalStatusProvider>(context, listen: false);
+    final appUserProvider = Provider.of<AppuserProvider>(context, listen: false);
+    final userID = appUserProvider.appUser['id'];
+
     if (audioBlock.isEmpty) return;
 
     try {
       // No setState here. The provider will handle notifying the UI.
-      await todoListProvider.processAudio(audioBlock, internalStatusProvider);
+      await todoListProvider.processAudio(userID, audioBlock, internalStatusProvider);
       debugPrint('Audio block processed successfully.');
     } catch (e) {
       debugPrint('Error processing audio block: $e');
@@ -48,6 +54,16 @@ class _NewSessionHomeState extends State<NewSessionHome> {
     final uuid = Uuid();
 
     await internalStatusProvider.setRecordingSessionUID(uuid.v4());
+  }
+
+  // --------------------------------------------------------------
+  // Reset and Navigate back
+  Future<void> _resetAndNavigateBack() async {
+    final internalStatusProvider = Provider.of<InternalStatusProvider>(context, listen: false);
+    internalStatusProvider.setRecordingSessionUID(null);
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const HomePage()),
+    );
   }
 
   // --------------------------------------------------------------
@@ -87,10 +103,7 @@ class _NewSessionHomeState extends State<NewSessionHome> {
           context: context,
           automaticallyImplyLeading: true,
           onPressed: () {
-            internalStatusProvider.setRecordingSessionUID(null);
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const HomePage()),
-            );
+            _resetAndNavigateBack();
           },
           isAdmin: false,
           isModerator: false,
@@ -219,7 +232,7 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                                   context: context,
                                 ),
                                 body(
-                                  header: item['deadline'] ?? 'None',
+                                  header: item['deadline'].toString() ?? 'None',
                                   color:
                                       localAppTheme['anchorColors']['primaryColor'],
                                   context: context,
@@ -232,7 +245,14 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                                 children: [
                                   IconButton(
                                       onPressed: (){
-                                        //Edit task
+                                        internalStatusProvider.setSelectedToDo(item);
+                                        showDialog<void>(
+                                          context: context,
+                                          barrierDismissible: false, // User must tap button to dismiss
+                                          builder: (BuildContext context) {
+                                            return EditTodoPopup();
+                                          },
+                                        );
                                       },
                                       icon: Icon(
                                           Icons.edit_document,
@@ -242,7 +262,8 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                                   ),
                                   IconButton(
                                     onPressed: (){
-                                      //Edit task
+                                      //Delete task
+                                      todoListProvider.deleteTodoItem(item['todoUID']);
                                     },
                                     icon: Icon(
                                       Icons.delete,
@@ -263,7 +284,7 @@ class _NewSessionHomeState extends State<NewSessionHome> {
               ),
             ),
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.only(bottom: 10.0, top: 10.0),
@@ -287,7 +308,9 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                     Expanded(
                       child: SingleChildScrollView(
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 10,
+                          ),
                           child: body(
                             header: audioScript['audioTranscript'] ?? '',
                             color:
@@ -297,6 +320,45 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                         ),
                       ),
                     ),
+                    Visibility(
+                      visible: !_isRecording && todoList.isNotEmpty,
+                      child: Container(
+                        height: 70,
+                        width: double.infinity,
+                        margin: EdgeInsetsGeometry.directional(
+                          top: 10,
+                        ),
+                        padding: EdgeInsetsGeometry.directional(
+                          top: 8.00
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(
+                              color: localAppTheme['anchorColors']['primaryColor'],
+                              width: 1.0,
+                            ),
+                          ),
+                        ),
+                        child: elevatedButton(
+                            label: 'SUBMIT FOR PROCESSING',
+                            onPressed: () async {
+                              final prefs = await SharedPreferences.getInstance();
+                              final authToken = prefs.getString('auth_token') ?? '';
+                              final transcript = audioScript['audioTranscript'] ?? '';
+                              final todoItems = todoListFull.where((todo) => todo['recordingUID'] == recordingUID).toList();
+
+                              await todoListProvider.processTodoItems(recordingUID ?? '', authToken, transcript, todoItems);
+
+                              _resetAndNavigateBack();
+                              },
+                            backgroundColor: localAppTheme['anchorColors']['primaryColor'],
+                            labelColor: localAppTheme['anchorColors']['secondaryColor'],
+                            leadingIcon: null,
+                            trailingIcon: null,
+                            context: context,
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),

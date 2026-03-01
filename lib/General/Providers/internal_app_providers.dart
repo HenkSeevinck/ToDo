@@ -8,6 +8,7 @@ class InternalStatusProvider with ChangeNotifier {
   String userUIDToShow = '';
   String? homePageSelectedOption;
   String? recordingSessionUID;
+  Map<String, dynamic>? selectedToDo;
 
   List<Map<String, dynamic>> homePageOptions = [
     {'selection': 'todo', 'pageName': 'MY TO-DO', 'icon': Icons.today, 'navigateTo': SizedBox(), 'image': 'images/todo.png'},
@@ -38,6 +39,11 @@ class InternalStatusProvider with ChangeNotifier {
 
   Future<void> setUserUIDToShow(String value) async {
     userUIDToShow = value;
+    notifyListeners();
+  }
+
+  Future<void> setSelectedToDo(Map<String, dynamic>? todo) async {
+    selectedToDo = todo;
     notifyListeners();
   }
 }
