@@ -25,7 +25,7 @@ class _MobileHomeState extends State<MobileHome> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final height = constraints.maxHeight;
+        final height = constraints.maxHeight - 1;
         const crossAxisCount = 2;
         final tileWidth = width / crossAxisCount;
         final rowsNeeded = (options.length / crossAxisCount).ceil();
@@ -33,7 +33,15 @@ class _MobileHomeState extends State<MobileHome> {
         final tileHeight = height / rowsToShow;
         final aspectRatio = tileWidth / tileHeight;
 
-        return SizedBox(
+        return Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: localAppTheme['anchorColors']['primaryColor'],
+                width: 1.0,
+              )
+            )
+          ),
           child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: crossAxisCount, childAspectRatio: aspectRatio),
             itemCount: options.length,
@@ -48,6 +56,7 @@ class _MobileHomeState extends State<MobileHome> {
                     top: 10.0,
                     left: index % 2 == 0 ? 0.0 : 5.0,
                     right: index % 2 == 0 ? 5.0 : 0.0,
+                    //bottom: 1.0
                   ),
                   child: Stack(
                     alignment: Alignment.center,
@@ -56,7 +65,11 @@ class _MobileHomeState extends State<MobileHome> {
                         height: double.infinity,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12.0),
+                          border: Border.all(
+                            color: localAppTheme['anchorColors']['primaryColor'],
+                            width: 1.0,
+                          ),
+                          //borderRadius: BorderRadius.circular(12.0),
                         ),
                         clipBehavior: Clip.antiAlias,
                         child: Image.asset(
@@ -73,14 +86,13 @@ class _MobileHomeState extends State<MobileHome> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 10),
                       Container(
                         width: 150,
                         height: 40,
                         padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                         decoration: BoxDecoration(
                           color: localAppTheme['anchorColors']['secondaryColor'].withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(8.0),
+                          //borderRadius: BorderRadius.circular(8.0),
                           border: Border.all(color: localAppTheme['anchorColors']['primaryColor']),
                         ),
                         child: Center(
@@ -143,6 +155,13 @@ class _MobileHomeState extends State<MobileHome> {
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
+            pageHeaderImage(
+                imagePath: 'images/newsession.png', //TODO: Change image
+                context: context,
+                toolTip: '',
+                userProfileToShow: {},
+                pageTitle: 'LANDING PAGE'
+            ),
             Expanded(
               child: Container(
                 padding: const EdgeInsets.only(bottom: 10.0),

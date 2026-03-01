@@ -135,6 +135,13 @@ class _NewSessionHomeState extends State<NewSessionHome> {
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
+            pageHeaderImage(
+                imagePath: 'images/newsession.png',
+                context: context,
+                toolTip: '',
+                userProfileToShow: {},
+                pageTitle: 'START NEW SESSION'
+            ),
             Expanded(
               flex: 2,
               child: Container(

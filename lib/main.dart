@@ -10,6 +10,7 @@ import 'package:todo_list/HomePage/home_page.dart';
 import 'package:todo_list/SigninSignupPage/signin_signup.dart';
 import 'General/DevicePermissions/devicepermissions.dart';
 import 'General/Providers/todo_list_provider.dart';
+import 'General/Providers/todoitems_provider.dart';
 import 'General/Variables/globalvariables.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -28,7 +29,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => InternalStatusProvider()),
         ChangeNotifierProvider(create: (_) => AppuserProvider()),
         ChangeNotifierProvider(create: (_) =>  TodoListProvider()),
-        //ChangeNotifierProvider.value(value: todoListProvider),
+        ChangeNotifierProvider(create: (_) => TodoItemsProvider())
       ],
       child: const MyApp(),
     ),
