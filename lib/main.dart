@@ -10,7 +10,7 @@ import 'package:todo_list/HomePage/home_page.dart';
 import 'package:todo_list/SigninSignupPage/signin_signup.dart';
 import 'General/DevicePermissions/devicepermissions.dart';
 import 'General/Providers/todo_list_provider.dart';
-import 'General/Variables/globalvariables';
+import 'General/Variables/globalvariables.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

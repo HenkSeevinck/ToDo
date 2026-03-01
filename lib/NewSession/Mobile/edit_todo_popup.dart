@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/General/Providers/todo_list_provider.dart';
 import '../../General/Providers/internal_app_providers.dart';
-import '../../General/Variables/globalvariables';
+import '../../General/Variables/globalvariables.dart';
 import '../../General/Widgets/widgets.dart';
 
 class EditTodoPopup extends StatefulWidget {

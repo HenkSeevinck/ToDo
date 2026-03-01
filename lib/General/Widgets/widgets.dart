@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:todo_list/General/Variables/globalvariables';
+import 'package:todo_list/General/Variables/globalvariables.dart';
 //import 'package:provider/provider.dart';
 
 //------------------------------------------------------------------------

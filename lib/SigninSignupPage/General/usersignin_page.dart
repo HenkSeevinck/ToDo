@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/General/Providers/appuser_provider.dart';
 import 'package:todo_list/General/Providers/internal_app_providers.dart';
-import 'package:todo_list/General/Variables/globalvariables';
+import 'package:todo_list/General/Variables/globalvariables.dart';
 import 'package:todo_list/General/Widgets/widgets.dart';
 import 'package:todo_list/SigninSignupPage/General/validators.dart';
 

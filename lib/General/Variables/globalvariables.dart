@@ -10,27 +10,33 @@ import 'package:todo_list/General/Providers/internal_app_providers.dart';
 // `main()` config runs). Widgets should call the font function at runtime.
 
 //------------------------------------------------------------------------
-// Corporate Anchor Colors (Add different Anchor Color combination to change the theme of the App)
-Map<String, dynamic> anchorPair1 = {'primaryColor': const Color(0xFF000000), 'secondaryColor': const Color(0xFFFFFFFF)};
+// Corporate Anchor Colors
+// (Maintained for a clean, white-background UI with professional dark text)
+Map<String, dynamic> anchorPair1 = {'primaryColor': const Color(0xFF1A2B44), 'secondaryColor': const Color(0xFFFFFFFF)};
 
 //------------------------------------------------------------------------
 // Corporate Utility Colors
-Map<String, dynamic> utilityPair1 = {'color1': const Color(0xFF007069), 'color2': const Color(0xFF85E5A7)};
 
-Map<String, dynamic> utilityPair2 = {'color1': const Color(0xFF0072FD), 'color2': const Color(0xFF00D9FF)};
+// Pair 1: The "Success/Green" gradient from the top loop
+Map<String, dynamic> utilityPair1 = {'color1': const Color(0xFF4CAF50), 'color2': const Color(0xFF8BC34A)};
 
-Map<String, dynamic> utilityPair3 = {'color1': const Color(0xFFFF7038), 'color2': const Color(0xFFFCDF20)};
+// Pair 2: The "Primary/Blue" gradient from the bottom loop and speech bubble
+Map<String, dynamic> utilityPair2 = {'color1': const Color(0xFF1E4D92), 'color2': const Color(0xFF42A5F5)};
 
-Map<String, dynamic> utilityPair4 = {'color1': const Color(0xFF9E0D8F), 'color2': const Color(0xFFFF99FF)};
+// Pair 3: The "Action/Orange" accent from the center checkmark
+Map<String, dynamic> utilityPair3 = {'color1': const Color(0xFFE65100), 'color2': const Color(0xFFFF9800)};
+
+// Pair 4: The "Neutral/Slate" used in the logo text "AGENDAFLOW"
+Map<String, dynamic> utilityPair4 = {'color1': const Color(0xFF263238), 'color2': const Color(0xFF546E7A)};
 
 //------------------------------------------------------------------------
 //Application Information
 Map<String, dynamic> appInfo = {
-  'name': 'APPLICATION BUILDER',
+  'name': 'AGENGAFLOW',
   'description': '''
 TBA
 ''',
-  'version': 0.1013,
+  'version': 0.0001,
   'applicationID': 9,
 };
 

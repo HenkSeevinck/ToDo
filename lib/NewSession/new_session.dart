@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/General/Providers/internal_app_providers.dart';
-import 'package:todo_list/General/Variables/globalvariables';
+import 'package:todo_list/General/Variables/globalvariables.dart';
 import 'package:todo_list/General/Widgets/widgets.dart';
 import 'package:todo_list/NewSession/Mobile/new_session_home.dart';
 

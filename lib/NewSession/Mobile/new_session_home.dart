@@ -10,7 +10,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../General/Providers/appuser_provider.dart';
 import '../../General/Providers/internal_app_providers.dart';
-import '../../General/Variables/globalvariables';
+import '../../General/Variables/globalvariables.dart';
 import 'edit_todo_popup.dart';
 
 class NewSessionHome extends StatefulWidget {
@@ -166,7 +166,7 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                             color: _isRecording
                                 ? Colors.red
                                 : localAppTheme['anchorColors']['primaryColor'],
-                            size: 150,
+                            size: MediaQuery.of(context).size.height * 0.15,
                           ),
                           onPressed: () async {
                             //Generate UID at start of recording
