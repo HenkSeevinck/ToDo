@@ -140,7 +140,7 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                 context: context,
                 toolTip: '',
                 userProfileToShow: {},
-                pageTitle: 'START NEW SESSION'
+                pageTitle: 'NEW SESSION'
             ),
             Expanded(
               flex: 2,
@@ -160,35 +160,56 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                 ),
                 child: SizedBox(
                   width: double.infinity,
-                  child: isProcessing
-                      ? Center(
-                          child: CircularProgressIndicator(
-                            color:
-                                localAppTheme['anchorColors']['primaryColor'],
-                          ),
-                        )
-                      : IconButton(
-                          icon: Icon(
-                            Icons.mic,
-                            color: _isRecording
-                                ? Colors.red
-                                : localAppTheme['anchorColors']['primaryColor'],
-                            size: MediaQuery.of(context).size.height * 0.15,
-                          ),
-                          onPressed: () async {
-                            //Generate UID at start of recording
-                            if(!_isRecording) {
-                              await _generateUID();
-                            }
+                  child: Stack(
+                          children: [
+                            Center(
+                              child: IconButton(
+                                  icon: imageDisplay(
+                                      imagePath: _isRecording
+                                      ? 'images/takingNotesActive.png'
+                                      : 'images/takingNotesInactive.png',
+                                      width: MediaQuery.of(context).size.height * 0.15,
+                                      height: MediaQuery.of(context).size.height * 0.15,
+                                      context: context
+                                  ),
+                                  onPressed: () async {
+                                    //Generate UID at start of recording
+                                    if(!_isRecording) {
+                                      await _generateUID();
+                                    }
 
-                            //Toggle recording
-                            _audioRecorderService.toggleRecording(
-                              onAudioBlockReady: _handleAudioBlock,
-                            );
-                            setState(() {
-                              _isRecording = !_isRecording;
-                            });
-                          },
+                                    //Toggle recording
+                                    _audioRecorderService.toggleRecording(
+                                      onAudioBlockReady: _handleAudioBlock,
+                                    );
+                                    setState(() {
+                                      _isRecording = !_isRecording;
+                                    });
+                                  },
+                                ),
+                            ),
+                            Visibility(
+                              visible: isProcessing,
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      width: MediaQuery.of(context).size.height * 0.15,
+                                      height: MediaQuery.of(context).size.height * 0.15,
+                                      color: Colors.white.withOpacity(0.7),
+                                    ),
+                                  ),
+                                  Center(
+                                    child: CircularProgressIndicator(
+                                      color:
+                                      localAppTheme['anchorColors']['primaryColor'],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                 ),
               ),
@@ -210,7 +231,7 @@ class _NewSessionHomeState extends State<NewSessionHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     header2(
-                      header: 'ACTIONS FROM THE SESSION:',
+                      header: 'NOTES FROM THE SESSION:',
                       context: context,
                       color: localAppTheme['anchorColors']['primaryColor'],
                     ),

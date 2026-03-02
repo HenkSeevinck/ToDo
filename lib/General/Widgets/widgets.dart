@@ -263,7 +263,7 @@ class _FormInputFieldState extends State<FormInputField> {
 //------------------------------------------------------------------------
 //Elevated Button
 Widget elevatedButton({
-  required String label,
+  required String? label,
   required VoidCallback? onPressed,
   required Color? backgroundColor,
   required Color labelColor,
@@ -290,13 +290,12 @@ Widget elevatedButton({
         children: [
           Visibility(
             visible: leadingIcon == null ? false : true,
-            child: Row(
-              children: [
-                Icon(leadingIcon, color: labelColor),
-                const SizedBox(width: 10),
-              ],
+            child: Icon(
+                leadingIcon,
+                color: labelColor
             ),
           ),
+          if (label != null)
           Text(
             textAlign: TextAlign.center,
             label,
@@ -306,11 +305,9 @@ Widget elevatedButton({
           ),
           Visibility(
             visible: trailingIcon == null ? false : true,
-            child: Row(
-              children: [
-                const SizedBox(width: 10),
-                Icon(trailingIcon, color: labelColor),
-              ],
+            child: Icon(
+                trailingIcon,
+                color: labelColor
             ),
           ),
         ],
@@ -954,7 +951,13 @@ Widget imageButton({
   return IconButton(
     tooltip: toolTip,
     onPressed: onPressed,
-    icon: imageDisplay(imagePath: imagePath, width: width, height: height, context: context),
+    icon: imageDisplay(
+        imagePath: imagePath,
+        width: width,
+        height: height,
+        context: context,
+        brokenIcon: brokenIcon ?? Icons.broken_image,
+    ),
   );
 }
 
@@ -978,7 +981,11 @@ Widget imageDisplay({
       imagePath,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
-        return Icon(brokenIcon ?? Icons.broken_image, size: width, color: localAppTheme['anchorColors']['primaryColor']);
+        return Icon(
+            brokenIcon ?? Icons.broken_image,
+            size: width,
+            color: localAppTheme['anchorColors']['primaryColor']
+        );
       },
     ),
   );
