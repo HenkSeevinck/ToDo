@@ -31,15 +31,121 @@ class _TodoHomeState extends State<TodoHome> {
 
   // --------------------------------------------------------------
   // To-Do Item Card
+  Widget resolvedToDoItemCard({
+    required BuildContext context,
+    required Map<String, dynamic> todoItem,
+  }) {
+    final localAppTheme = ResponsiveTheme(context).theme;
+    final todoItemsProvider = Provider.of<TodoItemsProvider>(context, listen: false);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: localAppTheme['anchorColors']['primaryColor'],
+                    width: 1.0,
+                  ),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  header3(
+                    header: 'RECORDING UID:',
+                    color: localAppTheme['anchorColors']['primaryColor'],
+                    context: context,
+                  ),
+                  body(
+                    header: todoItem['recordingUID'],
+                    context: context,
+                    color: localAppTheme['anchorColors']['primaryColor'],
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: localAppTheme['anchorColors']['primaryColor'],
+                    width: 1.0,
+                  ),
+                ),
+              ),
+              child: header3(
+                header: todoItem['task'],
+                context: context,
+                color: localAppTheme['anchorColors']['primaryColor'],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: localAppTheme['anchorColors']['primaryColor'],
+                    width: 1.0,
+                  ),
+                ),
+              ),
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      header3(
+                        header: 'OWNER:',
+                        color: localAppTheme['anchorColors']['primaryColor'],
+                        context: context,
+                      ),
+                      body(
+                        header: todoItem['owner'],
+                        color: localAppTheme['anchorColors']['primaryColor'],
+                        context: context,
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      header3(
+                        header: 'DEADLINE:',
+                        color: localAppTheme['anchorColors']['primaryColor'],
+                        context: context,
+                      ),
+                      body(
+                        header: todoItem['deadline'],
+                        color: localAppTheme['anchorColors']['primaryColor'],
+                        context: context,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // --------------------------------------------------------------
+  // To-Do Item Card
   Widget todoItemCard({
     required BuildContext context,
     required Map<String, dynamic> todoItem,
   }) {
     final localAppTheme = ResponsiveTheme(context).theme;
-    final todoListProvider = Provider.of<TodoListProvider>(
-      context,
-      listen: false,
-    );
+    final todoItemsProvider = Provider.of<TodoItemsProvider>(context, listen: false);
 
     return Card(
       child: Padding(
@@ -162,11 +268,24 @@ class _TodoHomeState extends State<TodoHome> {
                         width: 150,
                         child: elevatedButton(
                           label: 'HIGHER',
-                          onPressed: () {},
+                          onPressed: () async {
+                            try {
+                              // Only perform the action if priority is greater than 0
+                              if (todoItem['priority'] < 3) {
+                                // Decrement the value directly.
+                                todoItem['priority']++;
+
+                                // Now update the item via the provider
+                                await todoItemsProvider.updateToDoItem(todoItem['id'], todoItem);
+                              }
+                            } catch(e) {
+                              snackbar(context: context, header: e.toString());
+                            }
+                          },
                           backgroundColor:
-                              localAppTheme['utilityColorPair1']['color1'],
+                          localAppTheme['utilityColorPair1']['color1'],
                           labelColor:
-                              localAppTheme['anchorColors']['secondaryColor'],
+                          localAppTheme['anchorColors']['secondaryColor'],
                           leadingIcon: Icons.arrow_upward,
                           trailingIcon: null,
                           context: context,
@@ -176,11 +295,24 @@ class _TodoHomeState extends State<TodoHome> {
                         width: 150,
                         child: elevatedButton(
                           label: 'LOWER',
-                          onPressed: () {},
+                          onPressed: () async {
+                            try {
+                              // Only perform the action if priority is greater than 0
+                              if (todoItem['priority'] > 0) {
+                                // Decrement the value directly.
+                                todoItem['priority']--;
+
+                                // Now update the item via the provider
+                                await todoItemsProvider.updateToDoItem(todoItem['id'], todoItem);
+                              }
+                            } catch(e) {
+                              snackbar(context: context, header: e.toString());
+                            }
+                          },
                           backgroundColor:
                           localAppTheme['utilityColorPair3']['color1'],
                           labelColor:
-                              localAppTheme['anchorColors']['secondaryColor'],
+                          localAppTheme['anchorColors']['secondaryColor'],
                           leadingIcon: Icons.arrow_downward,
                           trailingIcon: null,
                           context: context,
@@ -213,11 +345,18 @@ class _TodoHomeState extends State<TodoHome> {
                     width: 150,
                     child: elevatedButton(
                       label: 'COMPLETE',
-                      onPressed: () {},
+                      onPressed: () async {
+                        try{
+                          todoItem['todoResolved'] = true;
+                          await todoItemsProvider.updateToDoItem(todoItem['id'], todoItem);
+                        } catch(e) {
+                          snackbar(context: context, header: e.toString());
+                        }
+                      },
                       backgroundColor:
-                          localAppTheme['anchorColors']['primaryColor'],
+                      localAppTheme['anchorColors']['primaryColor'],
                       labelColor:
-                          localAppTheme['anchorColors']['secondaryColor'],
+                      localAppTheme['anchorColors']['secondaryColor'],
                       leadingIcon: Icons.done,
                       trailingIcon: null,
                       context: context,
@@ -229,9 +368,9 @@ class _TodoHomeState extends State<TodoHome> {
                       label: null,
                       onPressed: () {},
                       backgroundColor:
-                          localAppTheme['anchorColors']['primaryColor'],
+                      localAppTheme['anchorColors']['primaryColor'],
                       labelColor:
-                          localAppTheme['anchorColors']['secondaryColor'],
+                      localAppTheme['anchorColors']['secondaryColor'],
                       leadingIcon: Icons.edit_document,
                       trailingIcon: null,
                       context: context,
@@ -241,11 +380,17 @@ class _TodoHomeState extends State<TodoHome> {
                     width: 70,
                     child: elevatedButton(
                       label: null,
-                      onPressed: () {},
+                      onPressed: () async {
+                        try {
+                          await todoItemsProvider.deleteToDoItem(todoItem['id']);
+                        } catch(e) {
+                          snackbar(context: context, header: e.toString());
+                        }
+                      },
                       backgroundColor:
-                          localAppTheme['anchorColors']['primaryColor'],
+                      localAppTheme['anchorColors']['primaryColor'],
                       labelColor:
-                          localAppTheme['anchorColors']['secondaryColor'],
+                      localAppTheme['anchorColors']['secondaryColor'],
                       leadingIcon: Icons.delete,
                       trailingIcon: null,
                       context: context,
@@ -265,10 +410,12 @@ class _TodoHomeState extends State<TodoHome> {
   @override
   Widget build(BuildContext context) {
     final localAppTheme = ResponsiveTheme(context).theme;
-    final todoItemsProvider = Provider.of<TodoItemsProvider>(
-      context,
-      listen: true,
-    );
+    final todoItemsProvider = Provider.of<TodoItemsProvider>(context, listen: true,);
+    final noPriorityToDoItems = todoItemsProvider.processedToDoList.where((todo) => todo['todoResolved'] == false && todo['priority'] == 0).toList();
+    final lowPriorityToDoItems = todoItemsProvider.processedToDoList.where((todo) => todo['todoResolved'] == false && todo['priority'] == 1).toList();
+    final mediumPriorityToDoItems = todoItemsProvider.processedToDoList.where((todo) => todo['todoResolved'] == false && todo['priority'] == 2).toList();
+    final highPriorityToDoItems = todoItemsProvider.processedToDoList.where((todo) => todo['todoResolved'] == false && todo['priority'] == 3).toList();
+    final resolvedToDoItems = todoItemsProvider.processedToDoList.where((todo) => todo['todoResolved'] == true).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -309,6 +456,7 @@ class _TodoHomeState extends State<TodoHome> {
         padding: const EdgeInsets.all(10.0),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               pageHeaderImage(
                 imagePath: 'images/todo.png',
@@ -317,27 +465,129 @@ class _TodoHomeState extends State<TodoHome> {
                 userProfileToShow: {},
                 pageTitle: 'MY TO-DO LIST',
               ),
-              Container(
-                width: double.infinity,
-                //height: double.infinity,
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(
+              SizedBox(height: 10),
+              // High Priority To-Do Items
+              Visibility(
+                visible: highPriorityToDoItems.isNotEmpty,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    header2(
+                      header: 'HIGH PRIORITY',
+                      context: context,
                       color: localAppTheme['anchorColors']['primaryColor'],
-                      width: 1.0,
                     ),
-                  ),
-                ),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: todoItemsProvider.processedToDoList.length,
-                  itemBuilder: (context, index) {
-                    final todoItem = todoItemsProvider.processedToDoList[index];
-                    return todoItemCard(context: context, todoItem: todoItem);
-                  },
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: highPriorityToDoItems.length,
+                      itemBuilder: (context, index) {
+                        final todoItem = highPriorityToDoItems[index];
+                        return todoItemCard(context: context, todoItem: todoItem);
+                      },
+                    ),
+                  ],
                 ),
               ),
+              // Medium Priority To-Do Items
+              Visibility(
+                visible: mediumPriorityToDoItems.isNotEmpty,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    header2(
+                      header: 'MEDIUM PRIORITY',
+                      context: context,
+                      color: localAppTheme['anchorColors']['primaryColor'],
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: mediumPriorityToDoItems.length,
+                      itemBuilder: (context, index) {
+                        final todoItem = mediumPriorityToDoItems[index];
+                        return todoItemCard(context: context, todoItem: todoItem);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              // Low Priority To-Do Items
+              Visibility(
+                visible: lowPriorityToDoItems.isNotEmpty,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    header2(
+                      header: 'LOW PRIORITY',
+                      context: context,
+                      color: localAppTheme['anchorColors']['primaryColor'],
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: lowPriorityToDoItems.length,
+                      itemBuilder: (context, index) {
+                        final todoItem = lowPriorityToDoItems[index];
+                        return todoItemCard(context: context, todoItem: todoItem);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              // No Priority To-Do Items
+              Visibility(
+                visible: noPriorityToDoItems.isNotEmpty,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    header2(
+                      header: 'NO PRIORITY',
+                      context: context,
+                      color: localAppTheme['anchorColors']['primaryColor'],
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: noPriorityToDoItems.length,
+                      itemBuilder: (context, index) {
+                        final todoItem = noPriorityToDoItems[index];
+                        return todoItemCard(context: context, todoItem: todoItem);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              // Resolved To Do Items
+              ExpansionTile(
+                collapsedShape: BorderDirectional(
+                  top: BorderSide(
+                    color: localAppTheme['anchorColors']['primaryColor'],
+                    width: 1.0,
+                  ),
+                  bottom: BorderSide(
+                    color: localAppTheme['anchorColors']['primaryColor'],
+                    width: 1.0,
+                  ),
+                ),
+                  title: header2(
+                      header: 'RESOLVED TO-DO ITEMS',
+                      context: context,
+                      color: localAppTheme['anchorColors']['primaryColor']),
+                  children:[
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      //itemCount: todoItemsProvider.processedToDoList.length,
+                      itemCount: resolvedToDoItems.length,
+                      //itemCount: resolvedToDoItems.length,
+                      itemBuilder: (context, index) {
+                        final todoItem = resolvedToDoItems[index];
+                        return resolvedToDoItemCard(context: context, todoItem: todoItem);
+                      },
+                    )
+                  ])
             ],
           ),
         ),
